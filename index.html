@@ -1583,24 +1583,18 @@ Level Right Now!</h2>				</div>
 
 
 
-<!-- Contact Form -->
-<form action="https://docs.google.com/forms/d/e/1FAIpQLSc8lhPdU2HhkrYyhnyfhrJneZMDK-Cjecvrjp0616x2zEQItw/formResponse"
-      method="POST" target="hidden_iframe"
-      onsubmit="document.getElementById('success-message').style.display='block'; this.reset();">
 
+	
+
+
+<!-- Google form / contact Form (no iframe, JS submit) -->
+<form id="contactForm"
+      action="https://docs.google.com/forms/d/e/1FAIpQLSc8lhPdU2HhkrYyhnyfhrJneZMDK-Cjecvrjp0616x2zEQItw/formResponse"
+      method="POST" accept-charset="utf-8">
   <div class="contact-form">
-    <p>
-      <input type="text" name="entry.2005620554" placeholder="Your Name *" required>
-    </p>
-
-    <p>
-      <input type="email" name="entry.1045781291" placeholder="Your Email *" required>
-    </p>
-
-    <p>
-      <textarea name="entry.839337160" placeholder="Message..." rows="5" required></textarea>
-    </p>
-
+    <p><input type="text" name="entry.2005620554" placeholder="Your Name *" required></p>
+    <p><input type="email" name="entry.1045781291" placeholder="Your Email *" required></p>
+    <p><textarea name="entry.839337160" placeholder="Message..." rows="5" required></textarea></p>
     <p>
       <button type="submit">
         <span class="text">Send Message</span>
@@ -1611,79 +1605,54 @@ Level Right Now!</h2>				</div>
         </span>
       </button>
     </p>
+    <div id="success-message" style="display:none; color:green; margin-top:10px;">
+      ✅ Thank you — your message has been sent!
+    </div>
   </div>
 </form>
 
-
-
-<!-- Styles -->
 <style>
-.contact-form {
-  max-width: 500px;   /* same box width as CF7 pic */
-  margin: auto;
+.contact-form{max-width:500px;margin:auto}
+.contact-form input,.contact-form textarea{
+  width:100%;padding:12px 18px;margin-bottom:4px;border:1px solid #ddd;
+  border-radius:25px;font-size:15px;outline:none;transition:border .3s
 }
-
-.contact-form input,
-.contact-form textarea {
-  width: 100%;
-  padding: 12px 18px;
-  margin-bottom: 4px;   /* ⬅ tightened spacing */
-  border: 1px solid #ddd;
-  border-radius: 25px;
-  font-size: 15px;
-  outline: none;
-  transition: border 0.3s;
+.contact-form textarea{border-radius:15px}
+.contact-form input:focus,.contact-form textarea:focus{border-color:#f34236}
+.contact-form button{
+  display:inline-flex;align-items:center;background:linear-gradient(90deg,#ff512f,#f34236);
+  color:#fff;font-size:14px;font-weight:bold;border:none;padding:8px 16px;border-radius:40px;
+  cursor:pointer;transition:.3s;box-shadow:0 4px 10px rgba(0,0,0,.15)
 }
-
-.contact-form textarea {
-  border-radius: 15px;
+.contact-form button:hover{transform:translateY(-2px)}
+.contact-form button .circle{
+  margin-left:12px;width:36px;height:36px;border-radius:50%;background:#fff;
+  display:flex;align-items:center;justify-content:center
 }
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-  border-color: #f34236;
-}
-
-/* Main button */
-.contact-form button {
-  display: inline-flex;
-  align-items: center;
-  background: linear-gradient(90deg, #ff512f, #f34236);
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 40px;
-  cursor: pointer;
-  transition: 0.3s;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.contact-form button:hover {
-  transform: translateY(-2px);
-}
-
-/* White Circle */
-.contact-form button .circle {
-  margin-left: 12px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Arrow inside circle */
-.contact-form button .circle svg {
-  width: 16px;
-  height: 16px;
-  fill: #f34236;
-}
+.contact-form button .circle svg{width:16px;height:16px;fill:#f34236}
 </style>
 
+<script>
+  (function () {
+    const form = document.getElementById('contactForm');
+    const success = document.getElementById('success-message');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();                                  // don't leave the page
+      const data = new FormData(form);
+
+      // Post to Google Forms without redirect
+      fetch(form.action, { method: 'POST', mode: 'no-cors', body: data })
+        .then(() => {
+          success.style.display = 'block';                 // show success locally
+          form.reset();
+        })
+        .catch(() => {
+          alert('Sorry, something went wrong. Please try again.');
+        });
+    });
+  })();
+</script>
 
 
 
@@ -1927,4 +1896,5 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 </body>
 
 </html>
+
 
