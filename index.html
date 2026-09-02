@@ -1585,7 +1585,7 @@ Level Right Now!</h2>				</div>
 
 <div class="wpcf7 no-js" lang="en-US" dir="ltr">
 <div class="screen-reader-response"><p role="status" aria-live="polite" aria-atomic="true"></p> <ul></ul></div>
-<form id="homeForm" action="https://api.web3forms.com/submit" method="post" class="wpcf7-form init" aria-label="Contact form" novalidate="novalidate">
+<form id="homeForm" action="https://api.web3forms.com/submit" method="post" class="wpcf7-form init" aria-label="Contact form">
 <div style="display: none;">
 <input type="hidden" name="access_key" value="52e05b3c-54ed-4053-bb95-181b0d223346">
 <input type="hidden" name="subject" value="New Message from Website — HanzWeb">
@@ -1604,18 +1604,36 @@ Level Right Now!</h2>				</div>
 </div>
 
 <style>
-#homeForm .wpcf7-response-output{display:none;margin:1.5em 0 0;padding:.8em 1.2em;border:2px solid #46b450;border-radius:8px;font-weight:600;color:#fff;}
-#homeForm.sent .wpcf7-response-output{display:block;border-color:#46b450;}
-#homeForm.invalid .wpcf7-response-output{display:block;border-color:#dc3232;}
+#homeForm .wpcf7-response-output{display:none;margin:1.5em 0 0;padding:.9em 1.3em;border:2px solid #46b450;border-radius:8px;font-weight:600;font-size:15px;line-height:1.5;background:#fff;color:#1d6b38;}
+#homeForm.sent .wpcf7-response-output{display:block;border-color:#46b450;color:#1d6b38;}
+#homeForm.invalid .wpcf7-response-output{display:block;border-color:#dc3232;color:#a52725;}
 #homeForm.submitting .wpcf7-submit{opacity:.6;pointer-events:none;}
+#homeForm .wpcf7-form-control:invalid.hz-touched{border:1px solid #dc3232;}
 </style>
+								
 
 <script>
 (function(){
   var f=document.getElementById("homeForm"),
       out=f.querySelector(".wpcf7-response-output");
+
   f.addEventListener("submit",function(e){
     e.preventDefault();
+
+    // khali fields / ghalat email check
+    var fields=f.querySelectorAll("input[name=name],input[name=email],textarea[name=message]"),
+        bad=null;
+    for(var i=0;i<fields.length;i++){
+      fields[i].classList.add("hz-touched");
+      if(!fields[i].value.trim() || !fields[i].checkValidity()){ if(!bad) bad=fields[i]; }
+    }
+    if(bad){
+      f.className="wpcf7-form init invalid";
+      out.textContent="Please fill in your name, a valid email address and your message.";
+      bad.focus();
+      return;
+    }
+
     f.className="wpcf7-form init submitting";
     fetch("https://api.web3forms.com/submit",{
       method:"POST",
@@ -1628,6 +1646,8 @@ Level Right Now!</h2>				</div>
         f.className="wpcf7-form init sent";
         out.textContent="Thank you! Your message has been sent. I will reply within 24 hours.";
         f.reset();
+        var t=f.querySelectorAll(".hz-touched");
+        for(var i=0;i<t.length;i++) t[i].classList.remove("hz-touched");
       }else{
         f.className="wpcf7-form init invalid";
         out.textContent="Something went wrong. Please email hanz.aliw@gmail.com directly.";
@@ -1635,11 +1655,12 @@ Level Right Now!</h2>				</div>
     })
     .catch(function(){
       f.className="wpcf7-form init invalid";
-      out.textContent="Network error. Please email hanz.aliw@gmail.com or WhatsApp 0313 1710091.";
+      out.textContent="Network error. Please email hanz.aliw@gmail.com or WhatsApp directly.";
     });
   });
 })();
 </script>
+
 
 
 
