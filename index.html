@@ -1583,9 +1583,9 @@ Level Right Now!</h2>				</div>
 
 
 
-<div class="wpcf7 no-js" lang="en-US" dir="ltr">
-<div class="screen-reader-response"><p role="status" aria-live="polite" aria-atomic="true"></p> <ul></ul></div>
-<form id="homeForm" action="https://api.web3forms.com/submit" method="post" class="wpcf7-form init" aria-label="Contact form">
+
+<div class="hz-form-wrap" lang="en-US" dir="ltr">
+<form id="homeForm" action="https://api.web3forms.com/submit" method="post" aria-label="Contact form">
 <div style="display: none;">
 <input type="hidden" name="access_key" value="52e05b3c-54ed-4053-bb95-181b0d223346">
 <input type="hidden" name="subject" value="New Message from Website — HanzWeb">
@@ -1599,42 +1599,50 @@ Level Right Now!</h2>				</div>
 <p><span class="wpcf7-form-control-wrap" data-name="your-message"><textarea cols="40" rows="10" maxlength="2000" class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required" required aria-required="true" placeholder="Message..." name="message"></textarea></span>
 </p>
 <p><button type="submit" class="wpcf7-submit octf-btn octf-btn-primary octf-btn-icon"> Send Message <i class="flaticon-right-arrow-1"></i></button>
-</p><div class="wpcf7-response-output" role="status" aria-live="polite"></div>
+</p><div id="homeResult" role="status" aria-live="polite" style="display:none"></div>
+
 </form>
 </div>
 
 <style>
-#homeForm .wpcf7-response-output{display:none;margin:1.5em 0 0;padding:.9em 1.3em;border:2px solid #46b450;border-radius:8px;font-weight:600;font-size:15px;line-height:1.5;background:#fff;color:#1d6b38;}
-#homeForm.sent .wpcf7-response-output{display:block;border-color:#46b450;color:#1d6b38;}
-#homeForm.invalid .wpcf7-response-output{display:block;border-color:#dc3232;color:#a52725;}
-#homeForm.submitting .wpcf7-submit{opacity:.6;pointer-events:none;}
-#homeForm .wpcf7-form-control:invalid.hz-touched{border:1px solid #dc3232;}
+#homeForm .hz-touched:invalid,#homeForm .hz-touched.hz-bad{border:1px solid #dc3232;}
+#homeForm.submitting .octf-btn{opacity:.6;pointer-events:none;}
 </style>
-								
 
 <script>
 (function(){
   var f=document.getElementById("homeForm"),
-      out=f.querySelector(".wpcf7-response-output");
+      out=document.getElementById("homeResult");
+
+  function show(msg,ok){
+    out.textContent=msg;
+    out.setAttribute("style",
+      "display:block;margin:1.5em 0 0;padding:14px 20px;border-radius:8px;font-size:15px;"+
+      "font-weight:600;line-height:1.5;background:"+(ok?"#eaf7ee":"#fdecec")+";"+
+      "border:2px solid "+(ok?"#46b450":"#dc3232")+";color:"+(ok?"#1d6b38":"#a52725")+";");
+  }
 
   f.addEventListener("submit",function(e){
     e.preventDefault();
+    e.stopImmediatePropagation();
 
-    // khali fields / ghalat email check
     var fields=f.querySelectorAll("input[name=name],input[name=email],textarea[name=message]"),
         bad=null;
     for(var i=0;i<fields.length;i++){
       fields[i].classList.add("hz-touched");
-      if(!fields[i].value.trim() || !fields[i].checkValidity()){ if(!bad) bad=fields[i]; }
+      var empty=!fields[i].value.trim(), invalid=!fields[i].checkValidity();
+      fields[i].classList.toggle("hz-bad",empty||invalid);
+      if((empty||invalid)&&!bad) bad=fields[i];
     }
     if(bad){
-      f.className="wpcf7-form init invalid";
-      out.textContent="Please fill in your name, a valid email address and your message.";
+      show("Please fill in your name, a valid email address and your message.",false);
       bad.focus();
       return;
     }
 
-    f.className="wpcf7-form init submitting";
+    f.className="submitting";
+    show("Sending your message...",true);
+
     fetch("https://api.web3forms.com/submit",{
       method:"POST",
       headers:{"Content-Type":"application/json",Accept:"application/json"},
@@ -1642,24 +1650,24 @@ Level Right Now!</h2>				</div>
     })
     .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
     .then(function(res){
+      f.className="";
       if(res.ok && res.j.success){
-        f.className="wpcf7-form init sent";
-        out.textContent="Thank you! Your message has been sent. I will reply within 24 hours.";
+        show("Thank you! Your message has been sent. I will reply within 24 hours.",true);
         f.reset();
         var t=f.querySelectorAll(".hz-touched");
-        for(var i=0;i<t.length;i++) t[i].classList.remove("hz-touched");
+        for(var i=0;i<t.length;i++) t[i].classList.remove("hz-touched","hz-bad");
       }else{
-        f.className="wpcf7-form init invalid";
-        out.textContent="Something went wrong. Please email hanz.aliw@gmail.com directly.";
+        show("Something went wrong. Please email hanz.aliw@gmail.com directly.",false);
       }
     })
     .catch(function(){
-      f.className="wpcf7-form init invalid";
-      out.textContent="Network error. Please email hanz.aliw@gmail.com or WhatsApp directly.";
+      f.className="";
+      show("Network error. Please email hanz.aliw@gmail.com or message on WhatsApp.",false);
     });
   });
 })();
 </script>
+
 
 
 
@@ -1884,13 +1892,7 @@ Level Right Now!</h2>				</div>
 wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
 /* ]]> */
 </script>
-<script type="text/javascript" src="./wp-content/plugins/contact-form-7/includes/swv/js/index.js?ver=5.9.8" id="swv-js"></script>
-<script type="text/javascript" id="contact-form-7-js-extra">
-/* <![CDATA[ */
-var wpcf7 = {"api":{"root":"\/\/wp-json\/","namespace":"contact-form-7\/v1"}};
-/* ]]> */
-</script>
-<script type="text/javascript" src="./wp-content/plugins/contact-form-7/includes/js/index.js?ver=5.9.8" id="contact-form-7-js"></script>
+
 <script type="text/javascript" src="./wp-content/themes/onum/js/slick.min.js?ver=20190829" id="slick-slider-js"></script>
 <script type="text/javascript" src="./wp-content/themes/onum/js/jquery.magnific-popup.min.js?ver=20190829" id="magnific-popup-js"></script>
 <script type="text/javascript" src="./wp-content/themes/onum/js/jquery.isotope.min.js?ver=20190829" id="isotope-js"></script>
